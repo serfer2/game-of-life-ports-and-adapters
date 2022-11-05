@@ -16,8 +16,27 @@ class Cell:
     def state(self) -> State:
         return self._state
 
-    def die(self):
-        self._state = State.DEAD
+    @property
+    def is_alive(self) -> bool:
+        return self.state == State.ALIVE
 
-    def revive(self):
+    @property
+    def is_dead(self) -> bool:
+        return self.state == State.DEAD
+
+
+class CellBuilder:
+    _state: State | None = None
+
+    def dead(self) -> "CellBuilder":
+        self._state = State.DEAD
+        return self
+
+    def alive(self) -> "CellBuilder":
         self._state = State.ALIVE
+        return self
+
+    def build(self):
+        if self._state is None:
+            raise ValueError("Undefined state")
+        return Cell(self._state)
