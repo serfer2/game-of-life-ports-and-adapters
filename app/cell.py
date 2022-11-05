@@ -7,7 +7,7 @@ class State(Enum):
 
 
 class Cell:
-    _state: State | None = None
+    _state: State
 
     def __init__(self, state: State) -> None:
         self._state = state

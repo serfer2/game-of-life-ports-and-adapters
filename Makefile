@@ -1,7 +1,14 @@
-test:
-	pytest
+#!/bin/bash
+VENV=". venv/bin/activate"
+MIN_COVERAGE=100
 
-lint:
+activate:
+	source venv/bin/activate;
+
+test: activate
+	pytest --cov=app tests/ --cov-fail-under=${MIN_COVERAGE}
+
+lint: activate
 	isort --check-only app tests
 	black --check app tests
 	flake8 app tests

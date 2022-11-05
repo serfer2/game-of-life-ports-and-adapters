@@ -142,9 +142,7 @@ class TestReviveCell:
         assert_that(next_gen_cell.is_alive, is_(True))
 
     @pytest.mark.parametrize("neighbour_count", (3, 2))
-    def test_it_doesnt_affect_living_cells(
-        self, neighbour_count
-    ):
+    def test_it_doesnt_affect_living_cells(self, neighbour_count):
         living_cell = CellBuilder().alive().build()
 
         next_gen_cell = self.rule.next_gen(
