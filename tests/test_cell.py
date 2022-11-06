@@ -25,6 +25,13 @@ class TestCellBuilder:
 
         assert_that(str(excinf.value), equal_to("Undefined state"))
 
+    def test_with_state(self):
+        state = State.ALIVE
+
+        cell = CellBuilder().with_state(state).build()
+
+        assert_that(cell.state, equal_to(state))
+
 
 class TestCell:
     def test_living_cell_is_alive_is_True(self):

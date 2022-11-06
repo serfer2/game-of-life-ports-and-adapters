@@ -36,7 +36,11 @@ class CellBuilder:
         self._state = State.ALIVE
         return self
 
-    def build(self):
+    def with_state(self, state: State) -> "CellBuilder":
+        self._state = state
+        return self
+
+    def build(self) -> Cell:
         if self._state is None:
             raise ValueError("Undefined state")
         return Cell(self._state)
