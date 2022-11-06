@@ -6,7 +6,7 @@ activate:
 	source venv/bin/activate;
 
 test: activate
-	pytest --cov=app tests/ --cov-fail-under=${MIN_COVERAGE}
+	pytest --cov-report=term-missing --cov=app tests/ --cov-fail-under=${MIN_COVERAGE}
 
 lint: activate
 	isort --check-only app tests
