@@ -1,7 +1,7 @@
 import pytest
 from hamcrest import assert_that, equal_to, is_
 
-from app.cell import CellBuilder, State
+from src.domain.models import CellBuilder, State
 
 
 class TestCellBuilder:

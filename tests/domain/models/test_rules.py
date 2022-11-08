@@ -1,8 +1,8 @@
 import pytest
 from hamcrest import assert_that, is_
 
-from app.cell import CellBuilder
-from app.rules import (
+from src.domain.models import CellBuilder
+from src.domain.models.rules import (
     DieByOverpopulation,
     DieByUnderpopulation,
     ReviveCell,

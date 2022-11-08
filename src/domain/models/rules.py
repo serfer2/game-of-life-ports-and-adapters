@@ -48,3 +48,6 @@ class ReviveCell(Rule):
         if cell.is_dead and neighbour_count == 3:
             return CellBuilder().alive().build()
         return cell
+
+
+RULES = (DieByUnderpopulation, StillAlive, DieByOverpopulation, ReviveCell)

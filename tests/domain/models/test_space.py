@@ -1,8 +1,7 @@
 import pytest
 from hamcrest import assert_that, equal_to, has_items
 
-from app.cell import State
-from app.space import Space
+from src.domain.models import Space, State
 
 
 class TestSpace:
