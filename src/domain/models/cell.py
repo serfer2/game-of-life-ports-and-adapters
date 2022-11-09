@@ -2,8 +2,8 @@ from enum import Enum
 
 
 class State(Enum):
-    ALIVE = 0
-    DEAD = 1
+    DEAD = 0
+    ALIVE = 1
 
 
 class Cell:
