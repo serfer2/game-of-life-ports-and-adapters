@@ -10,4 +10,4 @@ exclude =
 
 max-line-length = 100
 select = C,E,F,W,DJ,DJ10,DJ11
-extend-ignore = D100,D104,DJ01,DJ08
+extend-ignore = D100,D104,DJ01,DJ08,W503
