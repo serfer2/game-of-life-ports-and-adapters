@@ -1,9 +1,4 @@
-from .cell import Cell, CellBuilder
-
-
-class Rule:
-    def next_gen(self, cell: Cell, neighbour_count: int) -> Cell:
-        raise NotImplementedError()
+from ..domain.models import Cell, CellBuilder, Rule
 
 
 class DieByUnderpopulation(Rule):
@@ -11,8 +6,8 @@ class DieByUnderpopulation(Rule):
     as if by underpopulation.
     """
 
-    def next_gen(self, cell: Cell, neighbour_count: int) -> Cell:
-        if cell.is_alive and neighbour_count < 2:
+    def apply(self, cell: Cell, alive_neighbours: int) -> Cell:
+        if cell.is_alive and alive_neighbours < 2:
             return CellBuilder().dead().build()
         return cell
 
@@ -22,8 +17,8 @@ class StillAlive(Rule):
     the next generation.
     """
 
-    def next_gen(self, cell: Cell, neighbour_count: int) -> Cell:
-        if cell.is_alive and neighbour_count in (2, 3):
+    def apply(self, cell: Cell, alive_neighbours: int) -> Cell:
+        if cell.is_alive and alive_neighbours in (2, 3):
             return CellBuilder().alive().build()
         return cell
 
@@ -33,8 +28,8 @@ class DieByOverpopulation(Rule):
     as if by overpopulation.
     """
 
-    def next_gen(self, cell: Cell, neighbour_count: int) -> Cell:
-        if cell.is_alive and neighbour_count > 3:
+    def apply(self, cell: Cell, alive_neighbours: int) -> Cell:
+        if cell.is_alive and alive_neighbours > 3:
             return CellBuilder().dead().build()
         return cell
 
@@ -44,10 +39,10 @@ class ReviveCell(Rule):
     live cell, as if by reproduction.
     """
 
-    def next_gen(self, cell: Cell, neighbour_count: int) -> Cell:
-        if cell.is_dead and neighbour_count == 3:
+    def apply(self, cell: Cell, alive_neighbours: int) -> Cell:
+        if cell.is_dead and alive_neighbours == 3:
             return CellBuilder().alive().build()
         return cell
 
 
-RULES = (DieByUnderpopulation, StillAlive, DieByOverpopulation, ReviveCell)
+RULES = [DieByUnderpopulation, StillAlive, DieByOverpopulation, ReviveCell]
