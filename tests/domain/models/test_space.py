@@ -1,5 +1,5 @@
 import pytest
-from hamcrest import assert_that, equal_to, has_items
+from hamcrest import assert_that, equal_to, only_contains
 
 from src.domain.models import Space, State
 
@@ -68,78 +68,141 @@ class TestNeighboursCoordinates:
             (1, 0),
         ]
 
-        neighbours = self.space.neighbour_coordinates(posx=x, posy=y)
+        neighbours = self.space._neighbour_coordinates(posx=x, posy=y)
 
-        assert_that(neighbours, has_items(*expected_neighbour_coord))
+        assert_that(neighbours, only_contains(*expected_neighbour_coord))
 
     def test_top_left(self):
         x = 0
         y = 0
         expected_neighbour_coord = [(0, 1), (1, 1), (1, 0)]
 
-        neighbours = self.space.neighbour_coordinates(posx=x, posy=y)
+        neighbours = self.space._neighbour_coordinates(posx=x, posy=y)
 
-        assert_that(neighbours, has_items(*expected_neighbour_coord))
+        assert_that(neighbours, only_contains(*expected_neighbour_coord))
 
     def test_top_center(self):
         x = 1
         y = 0
         expected_neighbour_coord = [(0, 0), (0, 1), (1, 1), (2, 1), (2, 0)]
 
-        neighbours = self.space.neighbour_coordinates(posx=x, posy=y)
+        neighbours = self.space._neighbour_coordinates(posx=x, posy=y)
 
-        assert_that(neighbours, has_items(*expected_neighbour_coord))
+        assert_that(neighbours, only_contains(*expected_neighbour_coord))
 
     def test_top_right(self):
         x = 2
         y = 0
         expected_neighbour_coord = [(1, 0), (1, 1), (2, 1)]
 
-        neighbours = self.space.neighbour_coordinates(posx=x, posy=y)
+        neighbours = self.space._neighbour_coordinates(posx=x, posy=y)
 
-        assert_that(neighbours, has_items(*expected_neighbour_coord))
+        assert_that(neighbours, only_contains(*expected_neighbour_coord))
 
     def test_left_center(self):
         x = 0
         y = 1
         expected_neighbour_coord = [(0, 2), (1, 2), (1, 1), (1, 0), (0, 0)]
 
-        neighbours = self.space.neighbour_coordinates(posx=x, posy=y)
+        neighbours = self.space._neighbour_coordinates(posx=x, posy=y)
 
-        assert_that(neighbours, has_items(*expected_neighbour_coord))
+        assert_that(neighbours, only_contains(*expected_neighbour_coord))
 
     def test_bottom_left(self):
         x = 0
         y = 2
         expected_neighbour_coord = [(1, 2), (1, 1), (0, 1)]
 
-        neighbours = self.space.neighbour_coordinates(posx=x, posy=y)
+        neighbours = self.space._neighbour_coordinates(posx=x, posy=y)
 
-        assert_that(neighbours, has_items(*expected_neighbour_coord))
+        assert_that(neighbours, only_contains(*expected_neighbour_coord))
 
     def test_bottom_center(self):
         x = 1
         y = 2
         expected_neighbour_coord = [(0, 1), (0, 2), (2, 2), (2, 1), (1, 1)]
 
-        neighbours = self.space.neighbour_coordinates(posx=x, posy=y)
+        neighbours = self.space._neighbour_coordinates(posx=x, posy=y)
 
-        assert_that(neighbours, has_items(*expected_neighbour_coord))
+        assert_that(neighbours, only_contains(*expected_neighbour_coord))
 
     def test_bottom_right(self):
         x = 2
         y = 2
-        expected_neighbour_coord = [(1, 1), (2, 1), (2, 1)]
+        expected_neighbour_coord = [(1, 1), (1, 2), (2, 1)]
 
-        neighbours = self.space.neighbour_coordinates(posx=x, posy=y)
+        neighbours = self.space._neighbour_coordinates(posx=x, posy=y)
 
-        assert_that(neighbours, has_items(*expected_neighbour_coord))
+        assert_that(neighbours, only_contains(*expected_neighbour_coord))
 
     def test_right_center(self):
         x = 2
         y = 1
         expected_neighbour_coord = [(1, 0), (1, 1), (1, 2), (2, 2), (2, 0)]
 
-        neighbours = self.space.neighbour_coordinates(posx=x, posy=y)
+        neighbours = self.space._neighbour_coordinates(posx=x, posy=y)
 
-        assert_that(neighbours, has_items(*expected_neighbour_coord))
+        assert_that(neighbours, only_contains(*expected_neighbour_coord))
+
+
+class TestCountAliveNeighbours:
+    @pytest.mark.parametrize(
+        "x,y,expected_alive_neighbours,states",
+        (
+            (
+                1,
+                1,
+                8,
+                (
+                    (State.ALIVE, State.ALIVE, State.ALIVE),
+                    (State.ALIVE, State.DEAD, State.ALIVE),
+                    (State.ALIVE, State.ALIVE, State.ALIVE),
+                ),
+            ),
+            (
+                0,
+                0,
+                3,
+                (
+                    (State.DEAD, State.ALIVE, State.DEAD),
+                    (State.ALIVE, State.ALIVE, State.DEAD),
+                    (State.DEAD, State.DEAD, State.DEAD),
+                ),
+            ),
+            (
+                1,
+                2,
+                8,
+                (
+                    (State.ALIVE, State.ALIVE, State.ALIVE),
+                    (State.DEAD, State.DEAD, State.DEAD),
+                    (State.DEAD, State.ALIVE, State.DEAD),
+                ),
+            ),
+        ),
+        ids=(
+            "center",
+            "corner",
+            "edge_centered",
+        ),
+    )
+    def test_centered_cell(
+        self,
+        x: int,
+        y: int,
+        expected_alive_neighbours: int,
+        states: tuple[tuple[State]],
+    ):
+        states = (
+            (State.ALIVE, State.ALIVE, State.ALIVE),
+            (State.ALIVE, State.DEAD, State.ALIVE),
+            (State.ALIVE, State.ALIVE, State.ALIVE),
+        )
+        space = Space().from_cell_states(states=states)
+        x = 1
+        y = 1
+        expected_alive_neighbours = 8
+
+        alive_neighbours = space.count_cell_alive_neighbours(posx=x, posy=y)
+
+        assert_that(alive_neighbours, equal_to(expected_alive_neighbours))

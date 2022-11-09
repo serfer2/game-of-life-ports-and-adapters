@@ -1,11 +1,8 @@
-from collections.abc import Sequence
-from typing import Iterable
-
 from .cell import Cell, CellBuilder, State
 
 
 class Space:
-    _cells: Iterable[Iterable[Cell]] = [[]]
+    _cells: list[list[Cell]] = [[]]
 
     def __iter__(self):
         return self._cells.__iter__()
@@ -15,7 +12,7 @@ class Space:
         # 2D: height, width
         return (len(self._cells), len(self._cells[0]))
 
-    def from_cell_states(self, states: Sequence[Sequence[State]]) -> "Space":
+    def from_cell_states(self, states: list[list[State]]) -> "Space":
         if (
             not states
             or type(states) not in (list, tuple)  # noqa: W503
@@ -36,9 +33,13 @@ class Space:
 
         return self
 
-    def neighbour_coordinates(
+    def _neighbour_coordinates(
         self, posx: int, posy: int
     ) -> list[tuple[int, int]]:
+        dim = self.dimensions
+        max_x = dim[0] - 1 if dim[0] > 0 else 0
+        max_y = dim[1] - 1 if dim[1] > 0 else 0
+        neighbour_coordinates = []
         coordinates_360 = [
             (posx - 1, posy - 1),
             (posx - 1, posy),
@@ -49,9 +50,23 @@ class Space:
             (posx + 1, posy - 1),
             (posx, posy - 1),
         ]
-        neighbour_coordinates = []
         for coordinate in coordinates_360:
-            if coordinate[0] >= 0 and coordinate[1] >= 0:
-                neighbour_coordinates.append(coordinate)
+            if (
+                coordinate[0] >= 0
+                and coordinate[1] >= 0
+                and coordinate[0] <= max_x
+                and coordinate[1] <= max_y
+            ):
+                neighbour_coordinates.append((coordinate[0], coordinate[1]))
 
         return neighbour_coordinates
+
+    def count_cell_alive_neighbours(self, posx: int, posy: int) -> int:
+        alive_neighbours = 0
+        for coordinate in self._neighbour_coordinates(posx, posy):
+            x, y = coordinate
+
+            if self._cells[y][x].state == State.ALIVE:
+                alive_neighbours += 1
+
+        return alive_neighbours
