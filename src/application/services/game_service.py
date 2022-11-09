@@ -1,6 +1,7 @@
 from typing import Type
 
 from ...domain.models import Space
+from ...domain.services import NextState
 from ..rules import RULES, Rule
 from ..schemas import SpaceSchema
 
@@ -11,17 +12,6 @@ class GameService:
 
     def play(self, space: SpaceSchema) -> SpaceSchema:
         _space = Space().from_cell_states(states=space.states)
-        new_states = []
-        for posy, row in enumerate(_space):
-            new_states_row = []
-            for posx, cell in enumerate(row):
-                alive = _space.count_cell_alive_neighbours(posx=posx, posy=posy)
-
-                for rule in RULES:
-                    cell = rule().apply(cell=cell, alive_neighbours=alive)
-
-                new_states_row.append(cell.state)
-
-            new_states.append(new_states_row)
+        new_states = NextState().get(space=_space, rules=self._rules)
 
         return SpaceSchema(states=new_states)
